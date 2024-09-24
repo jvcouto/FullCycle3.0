@@ -1,0 +1,55 @@
+version: "3"
+
+services:
+
+  app:
+    build: 
+      context: node
+      dockerfile: node.Dockerfile
+    container_name: app
+    volumes:
+      - ./node:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: 
+      - app-network
+
+  db:
+    image: mysql:8.0
+    restart: always
+    volumes: 
+      - ./node/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+    networks: 
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    build:
+      context: node
+      dockerfile: nginx.Dockerfile
+    container_name: nginx
+    ports: 
+      - 8080:80
+    networks: 
+      - app-network
+    depends_on:
+      - app
+      - db
+
+
+networks:
+  app-network:
+    driver: bridge
+
+
+
+
+
