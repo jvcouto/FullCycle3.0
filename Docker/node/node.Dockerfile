@@ -3,10 +3,10 @@ FROM node:16.20.2
 
 WORKDIR /app
 
-COPY . /app/
+COPY ./src /app/
 
 RUN npm install
 
 EXPOSE 3000
 
-ENTRYPOINT [ "node", "app.mjs" ]
+CMD [ "node", "app.mjs" ]

@@ -7,6 +7,9 @@ services:
       context: node
       dockerfile: node.Dockerfile
     container_name: app
+    command: bash -c "npm install && node app.mjs"
+    volumes:
+      - ./node/src:/app
     depends_on:
       db:
         condition: service_healthy
